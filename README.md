@@ -1,6 +1,6 @@
 # Fast-GPU-PCC
 
-This repository contains Fast-GPU-PCC algorithm
+This repository contains the implementation of Fast-GPU-PCC algorithm.
 
 
 # Compilation:
@@ -9,17 +9,21 @@ nvcc -lcublas -O2 -arch=compute_35 -code=sm_35 -std=c++11 CPU_side.cpp GPU_side.
 
 
 # Running
-./out N M 
 
-M: number of elements
+Place the time series data in a text file called data.txt in the current directory. This file will be the input of the Fast-GPU-PCC method.
+
+To run the code use the following command:
+
+./out N M
+
+M: number of voxels
 
 N: length of time series
 
-#note:
+The resulting correlations will be stored in a binary file called corrs.bin.
 
-Make sure that you add the path to your data in the source code
+# Note
 
-The data should be stored in row major format (first N elements corresponds to time series of first element, second N elements corresponds to time series of first element and …)
+-- The data should be stored in row major format (first N elements corresponds to time series of first element, second N elements corresponds to time series of first element and …)
 
-
-Example of an input file is having 5 voxels with time series of length 3 is shown in example_data.txt
+-- Example of an input file is having 5 voxels with time series of length 3 is shown in data.txt
