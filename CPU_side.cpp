@@ -92,17 +92,19 @@ int main(int argc, char *argv[])
 {
     int  k = 0, l = 0;
     int N,L;
+    char wr;
     N = atoi(argv[1]);
     L = atoi(argv[2]);
-    cout<<N<<"  "<<L<<"\n\n";
+    wr = *(argv[3]);
+     cout<<"Number of voxels: "<<N<<"  "<<"Length of time series: "<<L<<"\n\n";
         srand(time(0));
 
     clock_t first,second;
-    string name ="/home/taban/Correlation_codes/code_wang/200000_500/";// "/home/taban/Correlation_codes/code_wang/100000_500/";
+    string name ="./";
     stringstream sstm;
     ifstream myReadFile;
     sstm.str("");
-    sstm << name<<"data1.txt";//"5row3column.txt";//"data1.txt";//"data_array_33001_215"<<".txt";//"data_array_18384_150"<<".txt";//"data_array_33001_215"<<".txt";//"data1"<<".txt";//"data_array_33001_215"<<".txt";
+    sstm << name<<"data.txt";
     clock_t kho1,kho2;
     kho1=clock();
     string ad = sstm.str();
@@ -119,7 +121,6 @@ int main(int argc, char *argv[])
 
         myReadFile.close();
 kho2=clock();
-cout<<"\nfile reading: \n"<<(double)(kho2-kho1)/CLOCKS_PER_SEC<<"\n ======================= \n";
 /////////////////////////////////////////////////////
         long long M11 = (N-1);
         M11 *= N;
@@ -145,7 +146,7 @@ long long OOO=remaining_N( N, L,0);
     temp_in3/=5;
 
 
-
+cout<<"\nComputing correlations ...";
 
 if(N<=OOO)
 {
@@ -154,13 +155,13 @@ cudaEventCreate(&start);
 cudaEventCreate(&stop);
 cudaEventRecord( start, 0 );
 
-        cout<<"\n This means that we have enough memory ";
+  //      cout<<"\n This means that we have enough memory ";
 
         first = clock();
         int u = CorMat_2(upper_tri,BOLD,N, L);
 
         second = clock();
-        cout<<"\ntime is: \n"<<(double)(second-first)/CLOCKS_PER_SEC<<"\n ======================= \n";
+        cout<<"\nRunning time for computing correlations: \n"<<(double)(second-first)/CLOCKS_PER_SEC<<" \n";
         delete []BOLD;
 cudaEventRecord( stop, 0 );
 cudaEventSynchronize( stop );
@@ -171,7 +172,6 @@ cudaEventElapsedTime( &time, start, stop );
 
 if(N>OOO)
 {
-cout<<"\n this is OOO: "<<OOO<<"\n";
 
 cudaEventCreate(&start);
 cudaEventCreate(&stop);
@@ -180,7 +180,7 @@ cudaEventRecord( start, 0 );
 first = clock();
 CorMat_3(upper_tri,  BOLD,  N, L, OOO);
 second = clock();
-  cout<<"\ntime is: \n"<<(double)(second-first)/CLOCKS_PER_SEC<<"\n ======================= \n";
+  cout<<"\nRunning time for computing correlations: \n"<<(double)(second-first)/CLOCKS_PER_SEC<<"\n ";
 
 
     delete []BOLD;
@@ -191,18 +191,28 @@ cudaEventElapsedTime( &time, start, stop );
 
 }
 
+if (wr == 'b'){
+cout<<"\nWriting correlation values into the binary file ... \n";
+ofstream OutFile;
+OutFile.open("corrs.bin", ios::binary | ios::out);
+OutFile.write((char*)upper_tri, sizeof(float)*M11);
+OutFile.close();
+cout<<"\nCorrelations are stored into the file corrs.bin \n";
+}
 
+if (wr == 't'){
+cout<<"\nWriting correlation values into the text file ... \n";
+ofstream correlations_print;
+correlations_print.open("corrs.txt");
+for(long long tab =0;tab<M11;tab++)
 
-cout<<"\n event time is : "<<time/1000<<"\n";
+     {    
+           correlations_print << upper_tri[tab] << '\n';
+     }
 
-//cout<<"\n data: - \n"<<temp_in<<": "<<upper_tri[temp_in]<<" -  "<<temp_in2<<": "<<upper_tri[temp_in2]<<" -  "<<temp_in3<<": "<<upper_tri[temp_in3]<<"\n "<<upper_tri[0]<<"  "<<upper_tri[1]<<"  "<<upper_tri[100]<<"  "<<upper_tri[1233]<<"\n "<<upper_tri[M11-100]<<" "<<upper_tri[M11-1]<<" "<<upper_tri[M11-2]<<"\n";
-cout<<"\n data: - \n"<<upper_tri[temp_in]<<" "<<upper_tri[temp_in2]<<" "<<upper_tri[temp_in3]<<"\n "<<upper_tri[0]<<" "<<upper_tri[1]<<" "<<upper_tri[100]<<" "<<upper_tri[1233]<<"\n "<<upper_tri[M11-100]<<" "<<upper_tri[M11-1]<<" "<<upper_tri[M11-2]<<"\n";
-//cudaEventDestroy( start );
-//cudaEventDestroy( stop );
-      cout<<"\n --------------------------- \n";
-
-cout<<upper_tri[656767]<<"\n\n";
-
+correlations_print.close();
+cout<<"\nCorrelations are stored into the text file corrs.txt \n";
+}
 return 0;
 
 }

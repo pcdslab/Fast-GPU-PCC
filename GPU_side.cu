@@ -201,13 +201,12 @@ int CorMat_3(float* upper_tri, float * BOLD, int N, int L,long long OOO)
     int pak=0;
     float* devCormat;
     float* dev_upper;
-    int ffl=0;
-    long long old_cormat_fullsize;
-    long long old_M1;
+    //long long old_cormat_fullsize;
+   // long long old_M1;
     long long cormat_fullsize;
     while(flag==1)
     {
-        cout<<"this is block: "<<block<<"\n\n";        
+        //cout<<"this is block: "<<block<<"\n\n";        
         if(block==N_prime)//checking for the last chunk
            flag=0;
         
@@ -246,9 +245,9 @@ int CorMat_3(float* upper_tri, float * BOLD, int N, int L,long long OOO)
             }
   
             
-            cout<<"\n IN PAK  0: "<<cormat_fullsize<<" " <<M1<<"*****";
-            old_cormat_fullsize=cormat_fullsize;
-            old_M1=M1;
+            //cout<<"\n IN PAK  0: "<<cormat_fullsize<<" " <<M1<<"*****";
+            //old_cormat_fullsize=cormat_fullsize;
+            //old_M1=M1;
             pak++;
 
         stat = cublasSgemm(handle, CUBLAS_OP_T,  CUBLAS_OP_N, block,N_prime,L,  &alpha, devBOLD+(so_far*L), L, devBOLD+(so_far*L), L, &beta, devCormat, block);//multiply block x L to L x N_prime = block x N_prime
